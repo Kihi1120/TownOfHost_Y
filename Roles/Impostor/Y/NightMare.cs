@@ -27,6 +27,7 @@ public sealed class NightMare : VoteGuesser, IImpostor
         KillCooldownInLightsOut = OptionKillCooldownInLightsOut.GetFloat();
         NormalKillCrewVision = OptionNormalKillCrewVision.GetFloat();
         DarkSeconds = OptionDarkSeconds.GetFloat();
+        IsAccelerated = false;
     }
     private static OptionItem OptionKillCooldownInLightsOut;
     private static OptionItem OptionSpeedInLightsOut;
@@ -43,6 +44,7 @@ public sealed class NightMare : VoteGuesser, IImpostor
     private float KillCooldownInLightsOut;   //停電時のキルクール
     private float NormalKillCrewVision;　　　 //通常キル時のクルー陣営の視界
     private float DarkSeconds;               //通常キル時の暗転する秒数
+    private bool IsAccelerated;  　　　　　　 //加速済みかフラグ
     public static void SetupOptionItem()
     {
         OptionSpeedInLightsOut = FloatOptionItem.Create(RoleInfo, 10, OptionName.NightMareSpeedInLightsOut, new(1.2f, 10.0f, 0.2f), 1.2f, false)
@@ -53,5 +55,18 @@ public sealed class NightMare : VoteGuesser, IImpostor
             .SetValueFormat(OptionFormat.Multiplier);
         OptionDarkSeconds = FloatOptionItem.Create(RoleInfo, 13, OptionName.NightMareDarkSeconds, new(0, 100, 1), 7, false)
         .SetValueFormat(OptionFormat.Seconds);
+    }
+    public override void ApplyGameOptions(IGameOptions opt)
+    {
+        if (Utils.IsActive(SystemTypes.Electrical) && !IsAccelerated)
+        { //停電中で加速済みでない時。
+            IsAccelerated = true;
+            Main.AllPlayerSpeed[Player.PlayerId] += SpeedInLightsOut;//Mareの速度を加算
+        }
+        else if (!Utils.IsActive(SystemTypes.Electrical) && IsAccelerated)
+        { //停電中ではなく加速済みになっている場合
+            IsAccelerated = false;
+            Main.AllPlayerSpeed[Player.PlayerId] -= SpeedInLightsOut;//Mareの速度を減算
+        }
     }
 }
