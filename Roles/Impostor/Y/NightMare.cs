@@ -99,6 +99,21 @@ public sealed class NightMare : VoteGuesser, IImpostor
             NameColorManager.Add(Killer.PlayerId, Killer.PlayerId, RoleInfo.RoleColorCode);
         }
     }
+    public override void AfterMeetingTasks()
+    {
+        if (Player.IsAlive())
+        {//生存していたらキルクールリセット
+            Player.RpcResetAbilityCooldown();
+            _ = new LateTask(() =>
+            {
+                //まだ停電が直っていなければキル可能モードに
+                if (Utils.IsActive(SystemTypes.Electrical))
+                {
+                    NameColorRED = true;
+                }
+            }, 10.0f, "NightMare NameColorRED");
+        }
+    }
     public static bool KnowTargetRoleColor(PlayerControl target, bool isMeeting)
         => !isMeeting && NameColorRED && target.Is(CustomRoles.NightMare);
 }
