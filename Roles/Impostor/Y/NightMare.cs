@@ -45,6 +45,8 @@ public sealed class NightMare : VoteGuesser, IImpostor
     private float NormalKillCrewVision;　　　 //通常キル時のクルー陣営の視界
     private float DarkSeconds;               //通常キル時の暗転する秒数
     private bool IsAccelerated;  　　　　　　 //加速済みかフラグ
+    public static PlayerControl Killer;
+    private static bool NameColorRED = false; // NameColorRED フラグ
     public static void SetupOptionItem()
     {
         OptionSpeedInLightsOut = FloatOptionItem.Create(RoleInfo, 10, OptionName.NightMareSpeedInLightsOut, new(1.2f, 10.0f, 0.2f), 1.2f, false)
@@ -68,5 +70,35 @@ public sealed class NightMare : VoteGuesser, IImpostor
             IsAccelerated = false;
             Main.AllPlayerSpeed[Player.PlayerId] -= SpeedInLightsOut;//Mareの速度を減算
         }
+        else if (!Utils.IsActive(SystemTypes.Electrical) && NameColorRED)
+        { //停電中ではなく名前の色が変わっている場合
+            NameColorRED = false;
+        }
     }
+    public override void OnFixedUpdate(PlayerControl player)
+    {
+        if (GameStates.IsInTask && NameColorRED)
+        {
+            if (!Utils.IsActive(SystemTypes.Electrical))
+            {
+                //停電解除されたらキルモード解除
+                NameColorRED = false;
+            }
+        }
+    }
+    public void OnCheckMurderAsKiller(MurderInfo info)
+    {
+        (var killer, var target) = info.AttemptTuple;
+        if (killer.Is(CustomRoles.NightMare) && Utils.IsActive(SystemTypes.Electrical))
+        {                                                                           //キルした際に停電中ならキルクールを短く...
+            NameColorRED = true;
+            Killer = killer;
+            Logger.Info($"{killer?.Data?.PlayerName}: 停電中にキルに成功", "NightMare");
+            Main.AllPlayerKillCooldown[killer.PlayerId] = KillCooldownInLightsOut;  //キルクールを設定する。
+            killer.SyncSettings();                                                  //キルクール処理を同期
+            NameColorManager.Add(Killer.PlayerId, Killer.PlayerId, RoleInfo.RoleColorCode);
+        }
+    }
+    public static bool KnowTargetRoleColor(PlayerControl target, bool isMeeting)
+        => !isMeeting && NameColorRED && target.Is(CustomRoles.NightMare);
 }
