@@ -28,7 +28,7 @@ public sealed class NightMare : RoleBase, IImpostor
         KillCooldownInLightsOut = OptionKillCooldownInLightsOut.GetFloat();
         NormalKillCrewVision = OptionNormalKillCrewVision.GetFloat();
         DarkSeconds = OptionDarkSeconds.GetFloat();
-        OriginalCrewVision = OptionNormalKillCrewVision.GetFloat();
+        //OriginalCrewVision = OptionNormalKillCrewVision.GetFloat();
         IsAccelerated = false;
     }
     private static OptionItem OptionKillCooldownInLightsOut;
@@ -42,14 +42,14 @@ public sealed class NightMare : RoleBase, IImpostor
         NightMareNormalKillCrewVision,
         NightMareDarkSeconds,
     }
-    private float SpeedInLightsOut;          //停電時の移動速度の加速値
-    private float KillCooldownInLightsOut;   //停電時のキルクール
-    public static float NormalKillCrewVision;//通常キル時のクルー陣営の視界
-    public static float DarkSeconds;         //通常キル時の暗転する秒数
-    private bool IsAccelerated;  　　　　　　 //加速済みかフラグ
-    private float OriginalCrewVision;        //クルーメイトの視界を保持する為の物。
+    private float SpeedInLightsOut;             //停電時の移動速度の加速値
+    private float KillCooldownInLightsOut;      //停電時のキルクール
+    private static float NormalKillCrewVision;  //通常キル時のクルー陣営の視界
+    private static float DarkSeconds;           //通常キル時の暗転する秒数
+    private bool IsAccelerated;                 //加速済みかフラグ
+    private float OriginalCrewVision;           //クルーメイトの視界を保持する為の物。
     public static PlayerControl Killer;
-    private static bool NameColorRED = false; // NameColorRED フラグ
+    private static bool NameColorRED = false;   // NameColorRED フラグ
     private static bool OnDefaultKill = false;
     private static bool OnElecKill = false;
     public static void SetupOptionItem()
@@ -130,7 +130,30 @@ public sealed class NightMare : RoleBase, IImpostor
     }
     public static void ApplyGameOptionsByOther(byte id, IGameOptions opt)
     {
-
+        if (OnDefaultKill)
+        {
+            var crewLightMod = FloatOptionNames.CrewLightMod;               //変数宣言
+            float OriginalCrewVision = opt.GetFloat(crewLightMod);          //「OriginalCrewVision」のなかに代入
+            foreach (var player in Main.AllPlayerControls)
+            {
+                if (!player.Is(CustomRoleTypes.Impostor))
+                {
+                    opt.SetFloat(crewLightMod, NormalKillCrewVision);       // playerの視界を一括でNormalKillCrewmateVisionの値に設定する
+                }
+            }
+            _ = new LateTask(() =>
+            {
+                foreach (var player in Main.AllPlayerControls)
+                {
+                    if (!player.Is(CustomRoleTypes.Impostor))
+                    {
+                        opt.SetFloat(crewLightMod, OriginalCrewVision);     // 元の視界に戻す
+                    }
+                }
+                Logger.CurrentMethod();
+            }, 10, "Vision Back");
+            OnDefaultKill = false;
+        }
     }
     public static bool KnowTargetRoleColor(PlayerControl target, bool isMeeting)
         => !isMeeting && NameColorRED && target.Is(CustomRoles.NightMare);
