@@ -10,6 +10,7 @@ using TownOfHostY.Roles.Core;
 using TownOfHostY.Roles.Neutral;
 using TownOfHostY.Roles.Crewmate;
 using TownOfHostY.Roles.AddOns.Common;
+using TownOfHostY.Roles.Impostor;
 
 namespace TownOfHostY.Modules
 {
@@ -113,6 +114,7 @@ namespace TownOfHostY.Modules
                 }
             }
             Blinder.ApplyGameOptionsByOther(player.PlayerId, opt);
+            NightMare.ApplyGameOptionsByOther(player.PlayerId, opt);
 
             if (Main.AllPlayerKillCooldown.TryGetValue(player.PlayerId, out var killCooldown))
             {
