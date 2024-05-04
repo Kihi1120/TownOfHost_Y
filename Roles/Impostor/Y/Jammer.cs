@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
-
+using System.Linq;
+using System.Collections.Generic;
 using TownOfHostY.Roles.Core;
 using TownOfHostY.Roles.Core.Interfaces;
 
@@ -28,6 +29,7 @@ public sealed class Jammer : RoleBase, IImpostor
         DownSpeed = OptionDownSpeed.GetFloat();
         SaboDownSpeedTime = OptionSaboDownSpeedTime.GetFloat();
         ShapeDownSpeedTime = OptionShapeDownSpeedTime.GetFloat();
+        JammerTarget = byte.MaxValue;
     }
     private static OptionItem OptionKillCooldown;
     private static OptionItem OptionShapeshiftCount;
@@ -47,6 +49,7 @@ public sealed class Jammer : RoleBase, IImpostor
     private static float DownSpeed;
     private static float SaboDownSpeedTime;
     private static float ShapeDownSpeedTime;
+    public byte JammerTarget;
 
 
     private static void SetUpOptionItem()
@@ -62,5 +65,36 @@ public sealed class Jammer : RoleBase, IImpostor
                .SetValueFormat(OptionFormat.Seconds);
         OptionShapeDownSpeedTime = FloatOptionItem.Create(RoleInfo, 14, OptionName.JammerShapeDownSpeedTime, new(1f, 180f, 1f), 5f, false)
         .SetValueFormat(OptionFormat.Seconds);
+    }
+    public float CalculateKillCooldown() => KillCooldown;
+    public override bool OnInvokeSabotage(SystemTypes systemType)
+    {
+        if (Player.IsAlive() && JammerTarget == byte.MaxValue)
+        {                                                                               //ジャマーが生きていて、JammerTargetに登録済みでない場合。
+            var rand = IRandom.Instance;
+            List<PlayerControl> targetPlayers = Main.AllAlivePlayerControls.ToList();
+            if (targetPlayers.Any())
+            {
+                var target = targetPlayers[rand.Next(0, targetPlayers.Count)];          //リスト内の中からランダムに1人選択する。
+                var Speed1 = Main.AllPlayerSpeed[target.PlayerId];                      //選択したターゲットの現在の移動速度を一時的に保存
+                Logger.Info("ダウンスピード先:" + target.GetNameWithRole(), "Jammer");
+                JammerTarget = target.PlayerId;
+                Main.AllPlayerSpeed[JammerTarget] *= DownSpeed;
+                target.MarkDirtySettings();
+                _ = new LateTask(() =>                                                  //「DownSpeedTime」で指定された時間後に実行される。
+                {
+                    Main.AllPlayerSpeed[target.PlayerId] = Speed1;                      //ターゲットに選択されたプレイヤーの移動速度を元に値に戻す
+                    target.MarkDirtySettings();
+                }, SaboDownSpeedTime, "Jammer DownSpeed");
+                JammerTarget = byte.MaxValue;
+            }
+            else                                                                        //ターゲットが0ならアップ先をプレイヤーをnullに
+            {
+                JammerTarget = byte.MaxValue;
+                Logger.SendInGame("Error.JammerNullException");
+                Logger.Warn("スピードダウン先がnullです。", "Jammer");
+            }
+        }
+        return true;
     }
 }
