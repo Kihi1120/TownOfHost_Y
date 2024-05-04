@@ -26,28 +26,22 @@ public sealed class NightMare : RoleBase, IImpostor
     {
         SpeedInLightsOut = OptionSpeedInLightsOut.GetFloat();
         KillCooldownInLightsOut = OptionKillCooldownInLightsOut.GetFloat();
-        NormalKillCrewVision = OptionNormalKillCrewVision.GetFloat();
         DarkSeconds = OptionDarkSeconds.GetFloat();
-        //OriginalCrewVision = OptionNormalKillCrewVision.GetFloat();
         IsAccelerated = false;
     }
     private static OptionItem OptionKillCooldownInLightsOut;
     private static OptionItem OptionSpeedInLightsOut;
-    private static OptionItem OptionNormalKillCrewVision;
     private static OptionItem OptionDarkSeconds;
     enum OptionName
     {
         NightMareSpeedInLightsOut,
         NightMareKillCooldownInLightsOut,
-        NightMareNormalKillCrewVision,
         NightMareDarkSeconds,
     }
     private float SpeedInLightsOut;             //停電時の移動速度の加速値
     private float KillCooldownInLightsOut;      //停電時のキルクール
-    private static float NormalKillCrewVision;  //通常キル時のクルー陣営の視界
     private static float DarkSeconds;           //通常キル時の暗転する秒数
     private bool IsAccelerated;                 //加速済みかフラグ
-    private float OriginalCrewVision;           //クルーメイトの視界を保持する為の物。
     public static PlayerControl Killer;
     private static bool NameColorRED = false;   // NameColorRED フラグ
     private static bool OnDefaultKill = false;
@@ -58,8 +52,6 @@ public sealed class NightMare : RoleBase, IImpostor
             .SetValueFormat(OptionFormat.Multiplier);
         OptionKillCooldownInLightsOut = FloatOptionItem.Create(RoleInfo, 11, OptionName.NightMareKillCooldownInLightsOut, new(0.0f, 180f, 2.5f), 15f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        OptionNormalKillCrewVision = FloatOptionItem.Create(RoleInfo, 12, OptionName.NightMareNormalKillCrewVision, new(0.0f, 3.0f, 0.1f), 0.1f, false)
-            .SetValueFormat(OptionFormat.Multiplier);
         OptionDarkSeconds = FloatOptionItem.Create(RoleInfo, 13, OptionName.NightMareDarkSeconds, new(0, 100, 1), 7, false)
         .SetValueFormat(OptionFormat.Seconds);
     }
@@ -132,13 +124,12 @@ public sealed class NightMare : RoleBase, IImpostor
     {
         if (OnDefaultKill)
         {
-            var crewLightMod = FloatOptionNames.CrewLightMod;               //変数宣言
-            float OriginalCrewVision = opt.GetFloat(crewLightMod);          //「OriginalCrewVision」のなかに代入
             foreach (var player in Main.AllPlayerControls)
             {
                 if (!player.Is(CustomRoleTypes.Impostor))
                 {
-                    opt.SetFloat(crewLightMod, NormalKillCrewVision);       // playerの視界を一括でNormalKillCrewmateVisionの値に設定する
+                    PlayerState.GetByPlayerId(player.PlayerId).IsBlackOut = true;//暗転させる。
+                    player.MarkDirtySettings();
                 }
             }
             _ = new LateTask(() =>
@@ -147,11 +138,11 @@ public sealed class NightMare : RoleBase, IImpostor
                 {
                     if (!player.Is(CustomRoleTypes.Impostor))
                     {
-                        opt.SetFloat(crewLightMod, OriginalCrewVision);     // 元の視界に戻す
+                        PlayerState.GetByPlayerId(player.PlayerId).IsBlackOut = false;//暗転を解除
+                        player.MarkDirtySettings();
                     }
                 }
-                Logger.CurrentMethod();
-            }, 10, "Vision Back");
+            }, DarkSeconds, "Vision Back");
             OnDefaultKill = false;
         }
     }
