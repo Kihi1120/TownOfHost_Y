@@ -76,14 +76,14 @@ public sealed class Jammer : RoleBase, IImpostor
             if (targetPlayers.Any())
             {
                 var target = targetPlayers[rand.Next(0, targetPlayers.Count)];          //リスト内の中からランダムに1人選択する。
-                var Speed1 = Main.AllPlayerSpeed[target.PlayerId];                      //選択したターゲットの現在の移動速度を一時的に保存
+                var NormalSpeed = Main.AllPlayerSpeed[target.PlayerId];                      //選択したターゲットの現在の移動速度を一時的に保存
                 Logger.Info("ダウンスピード先:" + target.GetNameWithRole(), "Jammer");
                 JammerTarget = target.PlayerId;
                 Main.AllPlayerSpeed[JammerTarget] *= DownSpeed;
                 target.MarkDirtySettings();
                 _ = new LateTask(() =>                                                  //「DownSpeedTime」で指定された時間後に実行される。
                 {
-                    Main.AllPlayerSpeed[target.PlayerId] = Speed1;                      //ターゲットに選択されたプレイヤーの移動速度を元に値に戻す
+                    Main.AllPlayerSpeed[target.PlayerId] = NormalSpeed;                      //ターゲットに選択されたプレイヤーの移動速度を元に値に戻す
                     target.MarkDirtySettings();
                 }, SaboDownSpeedTime, "Jammer DownSpeed");
                 JammerTarget = byte.MaxValue;
