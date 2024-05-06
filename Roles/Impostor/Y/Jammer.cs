@@ -57,7 +57,7 @@ public sealed class Jammer : RoleBase, IImpostor
         //OptionCanDeadReport = BooleanOptionItem.Create(RoleInfo, 10, OptionName.ShapeKillerCanDeadReport, true, false);
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 30f, false)
                 .SetValueFormat(OptionFormat.Seconds);
-        OptionShapeshiftCount = IntegerOptionItem.Create(RoleInfo, 11, OptionName.JammerShapeshiftMaxCount, new(1, 3, 1), 1, false)
+        OptionShapeshiftCount = IntegerOptionItem.Create(RoleInfo, 11, OptionName.JammerShapeshiftMaxCount, new(1, 10, 1), 1, false)
         .SetValueFormat(OptionFormat.Times);
         OptionDownSpeed = FloatOptionItem.Create(RoleInfo, 12, OptionName.JammerDownSpeed, new(0.1f, 1f, 0.1f), 1f, false)
                .SetValueFormat(OptionFormat.Multiplier);
@@ -81,11 +81,11 @@ public sealed class Jammer : RoleBase, IImpostor
                 JammerTarget = target.PlayerId;
                 Main.AllPlayerSpeed[JammerTarget] *= DownSpeed;
                 target.MarkDirtySettings();
-                _ = new LateTask(() =>                                                  //「DownSpeedTime」で指定された時間後に実行される。
+                _ = new LateTask(() =>                                                  //「SaboDownSpeedTime」で指定された時間後に実行される。
                 {
                     Main.AllPlayerSpeed[target.PlayerId] = NormalSpeed;                      //ターゲットに選択されたプレイヤーの移動速度を元に値に戻す
                     target.MarkDirtySettings();
-                }, SaboDownSpeedTime, "Jammer DownSpeed");
+                }, SaboDownSpeedTime, "Jammer SabotageDownSpeed");
                 JammerTarget = byte.MaxValue;
             }
             else                                                                        //ターゲットが0ならアップ先をプレイヤーをnullに
@@ -96,5 +96,20 @@ public sealed class Jammer : RoleBase, IImpostor
             }
         }
         return true;
+    }
+    public override bool OnCheckShapeshift(PlayerControl target, ref bool animate)
+    {
+        if (ShapeshiftCount == 0 || target.Is(CustomRoleTypes.Impostor)) return false;       //Countが0より少ない、またはターゲットが味方の場合は処理しない。
+        var JammerShapeshiftTarget = target;                                                // ターゲットの情報を保持。
+        var NormalSpeed = Main.AllPlayerSpeed[JammerShapeshiftTarget.PlayerId];             // 選択したターゲットの現在の移動速度を一時的に保存.
+        Main.AllPlayerSpeed[JammerShapeshiftTarget.PlayerId] *= DownSpeed;
+        JammerShapeshiftTarget.MarkDirtySettings();
+        ShapeshiftCount--;
+        _ = new LateTask(() =>
+            {
+                Main.AllPlayerSpeed[JammerShapeshiftTarget.PlayerId] = NormalSpeed;         // ターゲットに選択されたプレイヤーの移動速度を元に値に戻す
+                JammerShapeshiftTarget.MarkDirtySettings();
+            }, ShapeDownSpeedTime, "Jammer ShapeshiftDownSpeed");
+        return false;//モーションのカット
     }
 }
