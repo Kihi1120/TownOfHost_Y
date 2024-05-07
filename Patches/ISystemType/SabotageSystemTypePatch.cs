@@ -74,10 +74,12 @@ public static class SabotageSystemTypeUpdateSystemPatch
                 return true;
             }
 
-            var isSabotage = amount.HasBit(SwitchSystem.DamageSystem);
+            var isSabotage = amount.HasBit(SwitchSystem.DamageSystem /* 0b_10000000 */ );
             // サボタージュならこのあと下がる配電盤の位置に変換する : 配電盤操作ならamount分だけ1を左にずらす
             // ref: SwitchSystem.RepairDamage
             var switchedKnobs = (ElectricSwitches)(isSabotage ? amount & SwitchSystem.SwitchesMask /* 0b_11111 */ : 0b_00001 << amount);
+            // 元々ONのスイッチを下げる操作かどうか サボタージュ時はfalse
+            var wasOn = false;
 
             if (isSabotage)
             {
@@ -86,9 +88,17 @@ public static class SabotageSystemTypeUpdateSystemPatch
             else
             {
                 logger.Info($"{player.GetNameWithRole()} による配電盤操作: {switchedKnobs}");
+                if ((__instance.ActualSwitches & (byte)switchedKnobs) == (__instance.ExpectedSwitches & (byte)switchedKnobs))
+                {
+                    wasOn = true;
+                }
             }
-
-            return true;
+            var allowFlip = true;
+            foreach (var role in CustomRoleManager.AllActiveRoles.Values)
+            {
+                allowFlip &= role.OnFlipSwitch(__instance, player, isSabotage, switchedKnobs, wasOn);
+            }
+            return allowFlip;
         }
     }
     public static void Postfix(SabotageSystemType __instance, bool __runOriginal /* Prefixの結果，本体処理が実行されたかどうか */ )

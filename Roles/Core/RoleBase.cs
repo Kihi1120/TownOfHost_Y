@@ -4,6 +4,7 @@ using UnityEngine;
 using Hazel;
 using AmongUs.GameOptions;
 using static TownOfHostY.Translator;
+using TownOfHostY.Patches.ISystemType;
 
 namespace TownOfHostY.Roles.Core;
 
@@ -256,6 +257,16 @@ public abstract class RoleBase : IDisposable
     /// <param name="systemType">サボタージュの種類</param>
     /// <returns>falseでサボタージュのキャンセル</returns>
     public virtual bool OnSabotage(PlayerControl player, SystemTypes systemType) => true;
+
+    /// <summary>
+    /// 誰かが配電盤のツマミを操作したとき，もしくは停電を発生させたときに呼ばれる
+    /// </summary>
+    /// <param name="player">アクションを起こしたプレイヤー</param>
+    /// <param name="isSabotage">起こしたのがサボタージュかどうか</param>
+    /// <param name="switches">動かされたスイッチ</param>
+    /// <param name="wasOn">元々ONだったスイッチを操作したかどうか</param>
+    /// <returns>アクションをキャンセルするにはfalse</returns>
+    public virtual bool OnFlipSwitch(SwitchSystem switchSystem, PlayerControl player, bool isSabotage, ElectricSwitches switches, bool wasOn) => true;
 
     // NameSystem
     // 名前は下記の構成で表示される
