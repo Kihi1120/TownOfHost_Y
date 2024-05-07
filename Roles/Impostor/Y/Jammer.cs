@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using TownOfHostY.Roles.Core;
 using TownOfHostY.Roles.Core.Interfaces;
+using TownOfHostY.Patches.ISystemType;
 
 namespace TownOfHostY.Roles.Impostor;
 public sealed class Jammer : RoleBase, IImpostor
@@ -111,5 +112,23 @@ public sealed class Jammer : RoleBase, IImpostor
                 JammerShapeshiftTarget.MarkDirtySettings();
             }, ShapeDownSpeedTime, "Jammer ShapeshiftDownSpeed");
         return false;//モーションのカット
+    }
+    public override bool OnFlipSwitch(SwitchSystem switchSystem, PlayerControl player, bool isSabotage, ElectricSwitches switches, bool wasOn)
+    {
+        var unfixedBit = switchSystem.ActualSwitches ^ switchSystem.ExpectedSwitches;
+
+        Logger.Info($"actual  :{System.Convert.ToString(switchSystem.ActualSwitches, 2).PadLeft(8, '0')}", "RepairDamage");
+        Logger.Info($"expected:{System.Convert.ToString(switchSystem.ExpectedSwitches, 2).PadLeft(8, '0')}", "RepairDamage");
+        Logger.Info($"Unfixed :{System.Convert.ToString(unfixedBit, 2).PadLeft(8, '0')}", "RepairDamage");
+
+        //妨害するスイッチ
+        var brakeBit = 1 << IRandom.Instance.Next(3);
+
+        //妨害するスイッチが直すスイッチと一致していない、かつそのスイッチが直っているなら妨害
+        if (brakeBit != (byte)switches && (brakeBit & unfixedBit) == 0)
+        {
+            switchSystem.ActualSwitches ^= (byte)brakeBit;
+        }
+        return true;
     }
 }
