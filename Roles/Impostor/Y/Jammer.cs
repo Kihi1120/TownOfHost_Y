@@ -31,6 +31,7 @@ public sealed class Jammer : RoleBase, IImpostor
         SaboDownSpeedTime = OptionSaboDownSpeedTime.GetFloat();
         ShapeDownSpeedTime = OptionShapeDownSpeedTime.GetFloat();
         JammerTarget = byte.MaxValue;
+        PreviousTarget = null;
     }
     private static OptionItem OptionKillCooldown;
     private static OptionItem OptionShapeshiftCount;
@@ -51,6 +52,7 @@ public sealed class Jammer : RoleBase, IImpostor
     private static float SaboDownSpeedTime;
     private static float ShapeDownSpeedTime;
     public byte JammerTarget;
+    private PlayerControl PreviousTarget;
 
 
     private static void SetUpOptionItem()
@@ -100,12 +102,13 @@ public sealed class Jammer : RoleBase, IImpostor
     }
     public override bool OnCheckShapeshift(PlayerControl target, ref bool animate)
     {
-        if (ShapeshiftCount == 0 || target.Is(CustomRoleTypes.Impostor)) return false;       //Countが0より少ない、またはターゲットが味方の場合は処理しない。
+        if (ShapeshiftCount == 0 || target.Is(CustomRoleTypes.Impostor) || target == PreviousTarget) return false;       //Countが0より少ない、またはターゲットが味方の場合は処理しない。
         var JammerShapeshiftTarget = target;                                                // ターゲットの情報を保持。
         var NormalSpeed = Main.AllPlayerSpeed[JammerShapeshiftTarget.PlayerId];             // 選択したターゲットの現在の移動速度を一時的に保存.
         Main.AllPlayerSpeed[JammerShapeshiftTarget.PlayerId] *= DownSpeed;
         JammerShapeshiftTarget.MarkDirtySettings();
         ShapeshiftCount--;
+        PreviousTarget = JammerShapeshiftTarget;
         _ = new LateTask(() =>
             {
                 Main.AllPlayerSpeed[JammerShapeshiftTarget.PlayerId] = NormalSpeed;         // ターゲットに選択されたプレイヤーの移動速度を元に値に戻す
