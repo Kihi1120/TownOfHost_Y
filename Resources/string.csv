@@ -53,6 +53,7 @@
 "EvilGuesser","Evil Guesser","イビルゲッサー","","","",""
 "SelfBomber","SelfBomber","自爆魔","","","",""
 "GrudgeCharger","Grudge Charger","グラージチャージャー",
+"Jammer","Jammer","ジャマー"
 
 "CustomImpostorInfo","I can now use abilities like that","あんな能力も使えるようになりました",
 "EvilWatcherInfo","Gaze upon all votes","みんなの投票に目を光らせよう","你可以看见所有人的投票，注意他们的选择","注意所有人的投票","Вы видите цвета голосов","Veja todos os votos"
@@ -93,6 +94,7 @@
 "EvilGuesserInfo","Guess and shoot","推測して撃ち抜こう","","","",""
 "SelfBomberInfo","Self Bomb!","みんな死んじゃえ","","","",""
 "GrudgeChargerInfo","Resentment builds up and attacks","恨みが溜まり襲い掛かる",
+"JammerInfo","disturb...","邪魔してやろう...。"
 
 "CustomImpostorInfoLong","(Impostors):\nImpostor with the ability to Add-On to attributes set by the host.","[インポスター陣営]\nホストによって設定された属性の能力をもつインポスター。",
 "EvilWatcherInfoLong","(Impostors):\nYou can see everyone's votes even if anonymous voting is on.","(インポスター陣営):\n全員の投票先を見ることができる。","(内鬼阵营):\n会议时窥视者可以看到所有人的投票。","(狼人陣營):\n會議時觀察者可以看到所有人的投票。","(Предатель):\nNice Watcher может видеть все цвета голосов несмотря на анонимное голосование.","(Impostores):\nVocê consegue ver os votos de todos, mesmo que os votos anônimos estejam ligados."
@@ -130,6 +132,7 @@
 "EvilGuesserInfoLong","(Impostors):\nImpostor guessing the player's role.\nYou can shoot a player during a meeting by guessing their role.","(インポスター陣営):\n会議中に他のプレイヤーの役職を当てる事でそのプレイヤーを死亡(死因:射殺)させることができる。\nなお役職の推測をミスした場合、自身が死亡(死因:誤爆)する。","","","",""
 "SelfBomberInfoLong","(Impostors):\nCan perform self-destruct range kills.Shapeshifting kills all crew members around you and you die.","(インポスター陣営):\n自爆による特攻キルを行う事ができるインポスター。\nシェイプシフトすることで自身の周囲にいるクルーを全員キルして自分も死にます。\nさあ! 私と共に死んでもらうぞ!!\n爆破!!!!","","","",""
 "GrudgeChargerInfoLong","(Impostors):\nUse the kill button to charge the number of kills, use shapeshift to select a kill target, and automatically make a kill when approaching the target.\nNormal kills and transformations are not possible. Target cannot be changed until next turn or kill. The second and subsequent targets on the same turn can be selected with no cooldown.\nThe charge increases the number of kills possible by one when one gauge is fully accumulated.","[インポスター陣営]\nキルボタンを使ってキル回数をチャージ、シェイプ選択でキルターゲットを選択し、ターゲットに近づくと自動でキルをする。\n通常キル・変身不可。ターゲットは次のターンになるかキルするまで変更ができない。同ターン2人目以降はクールダウン無しでターゲットを選択できる。\nチャージは１ゲージ溜まり切るとキル可能回数が１増加する。"
+"JammerInfoLong","(Impostors):\n\n\n\n","(インポスター陣営):\nタスクフェーズ中に邪魔する事ができるインポスター。\nサボタージュ中ランダムで誰かの移動速度を遅くする。\nまた、シェイプシフトで指定したプレイヤーの\n移動速度を遅くすることもできる。\n※連続で同じプレイヤーを選択できない。\nJammerが生存時に配電盤の妨害が数秒入る。\n","","","",""
 
 "# マッドメイト系役職"
 "Madmate","Madmate","マッドメイト","叛徒","叛徒","Безумец","Tripulante Louco"
@@ -824,6 +827,10 @@ RefusingInfoLong,"(Add-ons):\nOnce he is about to be exiled, refuses to be exile
 "GrudgeChargerChargeKillCooldown","Charge Kill Cooldown","チャージ(キルボタン)クールダウン",
 "GrudgeChargerOneGaugeChargeCount","One Gauge Accumulate Charge Count","一ゲージが溜まるチャージ数",
 "GrudgeChargerKillCountAtStartGame","Possible Kill Count At the Start Of the Game","ゲーム開始時のキル可能回数",
+"JammerShapeshiftMaxCount","Number of times you can specify","指定できる回数","",""
+"JammerDownSpeed","deceleration value","減速値","",""
+"JammerSaboDownSpeedTime","Ability duration during sabotage","サボ中に能力持続時間","","",""
+"JammerShapeDownSpeedTime","Ability duration at shapeshift","シェイプ時の能力持続時間","",""
 
 # マッドメイト
 "CanMakeMadmateCount","Sidekick Madmate Max Count","サイドキックマッドメイト","变形者可以招募叛徒的数量","變形者招募叛徒最大人數","Максимум союзников Безумца","Máximo de Tripulantes Loucos Ajudantes"
