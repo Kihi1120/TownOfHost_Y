@@ -12,7 +12,7 @@ namespace TownOfHostY
         public static string ApplyNameColorData(this string name, PlayerControl seer, PlayerControl target, bool isMeeting)
         {
             if (!AmongUsClient.Instance.IsGameStarted) return name;
-            if (isMeeting && Snitch.IsCannotConfirmKillRoles(seer,target)) return name;
+            if (isMeeting && Snitch.IsCannotConfirmKillRoles(seer, target)) return name;
 
             if (!TryGetData(seer, target, out var colorCode))
             {
@@ -35,6 +35,7 @@ namespace TownOfHostY
                 || target.Is(CustomRoles.GM)
                 || (seer.Is(CustomRoleTypes.Impostor) && target.Is(CustomRoleTypes.Impostor) && !seer.Is(CustomRoles.StrayWolf) && !target.Is(CustomRoles.StrayWolf))
                 || Mare.KnowTargetRoleColor(target, isMeeting)
+                || NightMare.KnowTargetRoleColor(target, isMeeting)
                 || (target.Is(CustomRoles.Workaholic) && Workaholic.Seen)
                 || target.Is(CustomRoles.Rainbow)
                 || FortuneTeller.KnowTargetRoleColor(seer, target, isMeeting)

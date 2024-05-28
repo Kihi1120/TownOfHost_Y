@@ -10,6 +10,7 @@ using TownOfHostY.Roles.Core;
 using TownOfHostY.Roles.Neutral;
 using TownOfHostY.Roles.Crewmate;
 using TownOfHostY.Roles.AddOns.Common;
+using TownOfHostY.Roles.Impostor;
 
 namespace TownOfHostY.Modules
 {
