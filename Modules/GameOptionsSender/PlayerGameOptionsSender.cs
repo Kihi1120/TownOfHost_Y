@@ -114,7 +114,6 @@ namespace TownOfHostY.Modules
                 }
             }
             Blinder.ApplyGameOptionsByOther(player.PlayerId, opt);
-            NightMare.ApplyGameOptionsByOther(player.PlayerId, opt);
 
             if (Main.AllPlayerKillCooldown.TryGetValue(player.PlayerId, out var killCooldown))
             {
