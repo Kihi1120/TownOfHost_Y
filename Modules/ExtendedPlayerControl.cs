@@ -81,7 +81,7 @@ namespace TownOfHostY
             var client = player.GetClient();
             return client == null ? -1 : client.Id;
         }
-        public static CustomRoles GetCustomRole(this GameData.PlayerInfo player)
+        public static CustomRoles GetCustomRole(this NetworkedPlayerInfo player)
         {
             return player == null || player.Object == null ? CustomRoles.Crewmate : player.Object.GetCustomRole();
         }
@@ -167,7 +167,7 @@ namespace TownOfHostY
             if (player == null) return;
             if (AmongUsClient.Instance.ClientId == clientId)
             {
-                player.SetRole(role);
+                player.CoSetRole(role, true); // TODO:canOverride
                 return;
             }
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, Hazel.SendOption.Reliable, clientId);
@@ -369,21 +369,35 @@ namespace TownOfHostY
         {
             return $"{player?.Data?.PlayerName}" + (GameStates.IsInGame ? $"({player?.GetAllRoleName()})" : "");
         }
-        public static string GetRoleColorCode(this PlayerControl player)
+        public static string GetRoleColorCode(this PlayerControl player, bool temporaryRole = false)
         {
+            var role = player.GetCustomRole();
+            if (temporaryRole)
+            {
+                if (player.Is(CustomRoles.ChainShifterAddon))
+                    return Utils.GetRoleColorCode(CustomRoles.ChainShifter);
+            }
+
             (Color c, string t) = (Color.clear, "");
             //trueRoleNameでColor上書きあればそれになる
             player.GetRoleClass()?.OverrideTrueRoleName(ref c, ref t);
             if (c != Color.clear) return ColorUtility.ToHtmlStringRGB(c);
-            else return Utils.GetRoleColorCode(player.GetCustomRole());
+            else return Utils.GetRoleColorCode(role);
         }
-        public static Color GetRoleColor(this PlayerControl player)
+        public static Color GetRoleColor(this PlayerControl player, bool temporaryRole = false)
         {
+            var role = player.GetCustomRole();
+            if (temporaryRole)
+            {
+                if (player.Is(CustomRoles.ChainShifterAddon))
+                    return Utils.GetRoleColor(CustomRoles.ChainShifter);
+            }
+
             (Color c, string t) = (Color.clear, "");
             //trueRoleNameでColor上書きあればそれになる
             player.GetRoleClass()?.OverrideTrueRoleName(ref c, ref t);
             if (c != Color.clear) return c;
-            else return Utils.GetRoleColor(player.GetCustomRole());
+            else return Utils.GetRoleColor(role);
         }
         public static void ResetPlayerCam(this PlayerControl pc, float delay = 0f)
         {
@@ -527,7 +541,7 @@ namespace TownOfHostY
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
             Utils.NotifyRoles();
         }
-        public static void NoCheckStartMeeting(this PlayerControl reporter, GameData.PlayerInfo target)
+        public static void NoCheckStartMeeting(this PlayerControl reporter, NetworkedPlayerInfo target)
         { /*サボタージュ中でも関係なしに会議を起こせるメソッド
             targetがnullの場合はボタンとなる*/
             MeetingRoomManager.Instance.AssignSelf(reporter, target);
@@ -581,11 +595,6 @@ namespace TownOfHostY
             if (seen.IsAlive())
             {
                 return false;
-            }
-            if (EvilHacker.IsExistEvilFaller() &&
-                PlayerState.GetByPlayerId(seen.PlayerId).DeathReason == CustomDeathReason.Fall)
-            {
-                return true;
             }
             if (EvilIgnition.CanBombTarget() &&
                 PlayerState.GetByPlayerId(seen.PlayerId).DeathReason == CustomDeathReason.Bombed)

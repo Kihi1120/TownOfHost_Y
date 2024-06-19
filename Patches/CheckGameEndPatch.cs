@@ -131,6 +131,16 @@ namespace TownOfHostY
                     }
                     //弁護士且つ追跡者
                     Lawyer.EndGameCheck();
+
+                    //確定敗北陣営
+                    foreach (var pc in Main.AllPlayerControls)
+                    {
+                        if (pc.Is(CustomRoles.ChainShifterAddon))
+                        {
+                            if (CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                                CustomWinnerHolder.WinnerIds.Remove(pc.PlayerId);
+                        }
+                    }
                 }
                 ShipStatus.Instance.enabled = false;
                 StartEndGame(reason);
@@ -198,7 +208,7 @@ namespace TownOfHostY
                     // 蘇生
                     playerInfo.IsDead = false;
                     // 送信
-                    GameData.Instance.SetDirtyBit(0b_1u << playerId);
+                    playerInfo.SetDirtyBit(0b_1u << playerId);
                     AmongUsClient.Instance.SendAllStreamedObjects();
                 }
                 // ゲーム終了を確実に最後に届けるための遅延

@@ -67,8 +67,8 @@ namespace TownOfHostY
                 writer.Write(AmongUsClient.Instance.GameId);
                 writer.StartMessage(1); //0x01 Data
                 {
-                    writer.WritePacked(GameData.Instance.NetId);
-                    GameData.Instance.Serialize(writer, true);
+                    //writer.WritePacked(GameData.Instance.NetId);
+                    //NetworkedPlayerInfo.Serialize(writer, true);
 
                 }
                 writer.EndMessage();
@@ -78,7 +78,7 @@ namespace TownOfHostY
             AmongUsClient.Instance.SendOrDisconnect(writer);
             writer.Recycle();
         }
-        public static void OnDisconnect(GameData.PlayerInfo player)
+        public static void OnDisconnect(NetworkedPlayerInfo player)
         {
             // 実行条件: クライアントがホストである, IsDeadが上書きされている, playerが切断済み
             if (!AmongUsClient.Instance.AmHost || !IsCached || !player.Disconnected) return;

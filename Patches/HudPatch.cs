@@ -45,9 +45,9 @@ namespace TownOfHostY
             }
             if (GameStates.IsLobby)
             {
-                __instance.GameSettings.text = OptionShower.GetText();
-                __instance.GameSettings.fontSizeMin =
-                __instance.GameSettings.fontSizeMax = (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Japanese || Main.ForceJapanese.Value) ? 1.05f : 1.2f;
+                //__instance.GameSettings.text = OptionShower.GetText();
+                //__instance.GameSettings.fontSizeMin =
+                //__instance.GameSettings.fontSizeMax = (TranslationController.Instance.currentLanguage.languageID == SupportedLangs.Japanese || Main.ForceJapanese.Value) ? 1.05f : 1.2f;
             }
             //ゲーム中でなければ以下は実行されない
             if (!AmongUsClient.Instance.IsGameStarted) return;
@@ -185,7 +185,7 @@ namespace TownOfHostY
         public static void Postfix(Vent __instance, [HarmonyArgument(1)] ref bool mainTarget)
         {
             var player = PlayerControl.LocalPlayer;
-            Color color = PlayerControl.LocalPlayer.GetRoleColor();
+            Color color = PlayerControl.LocalPlayer.GetRoleColor(true);
             ((Renderer)__instance.myRend).material.SetColor("_OutlineColor", color);
             ((Renderer)__instance.myRend).material.SetColor("_AddColor", mainTarget ? color : Color.clear);
         }
@@ -238,7 +238,7 @@ namespace TownOfHostY
             {
                 var RoleWithInfo = $"{player.GetTrueRoleName()}:\r\n";
                 RoleWithInfo += player.GetRoleInfo();
-                __instance.taskText.text = Utils.ColorString(player.GetRoleColor(), RoleWithInfo) + "\n" + __instance.taskText.text;
+                __instance.taskText.text = Utils.ColorString(player.GetRoleColor(true), RoleWithInfo) + "\n" + __instance.taskText.text;
             }
 
             // RepairSenderの表示

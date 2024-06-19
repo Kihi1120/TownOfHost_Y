@@ -38,10 +38,8 @@ namespace TownOfHostY
                 if (!GameStates.IsModHost) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("Warning.NoModHost")));
                 if (DebugModeManager.IsDebugMode) sb.Append("\r\n").Append(Utils.ColorString(Color.green, "デバッグモード"));
 
-                var offset_x = 1.2f; //右端からのオフセット
-                if (HudManager.InstanceExists && HudManager._instance.Chat.chatButton.active) offset_x += 0.8f; //チャットボタンがある場合の追加オフセット
-                if (FriendsListManager.InstanceExists && FriendsListManager._instance.FriendsListButton.Button.active) offset_x += 0.8f; //フレンドリストボタンがある場合の追加オフセット
-                __instance.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(offset_x, 0f, 0f);
+                // 位置調整
+                __instance.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(2.6f, 6.0f, 0f);
 
                 if (GameStates.IsLobby)
                 {
@@ -56,7 +54,7 @@ namespace TownOfHostY
         class VersionShowerStartPatch
         {
             static string[] mainManuText = {
-                "このコメントは15種類らしい\nなんか増えてる？",
+                "このコメントは21種類らしい\nなんか増えてる？",
                 "いつもありがとう！\nこれからも沢山遊んでね",
                 "【今日のおすすめ役職】\nマッドニムロッド",
                 "【今日のおすすめ属性】\nリフュージング",
@@ -68,8 +66,14 @@ namespace TownOfHostY
                 "バカシェリフで誤爆して\n相手を吊ろう",
                 "属性を一つ足すだけで\n一気にゲームが変わります",
                 "ラストインポスターとか\nコンプリートクルーとかって\n使ってる？",
-                "パン屋はパン屋でも\nたまにご飯が好きになったりする。",
-                "そろそろ寒さ和らぐかな？\n体調管理には気を付けて。",
+                "パン屋はパン屋でも\nたまにご飯が好きになったりする",
+                "バカシェリフはもっとバカに\nなってもいいと思うんだ",
+                "新しい要素を考えるのって\n結構大変なんだよな",
+                "COしていいかどうか\n表示させることができます",
+                "ひいた役職の陣営がわからない？\n陣営表示機能を追加したよ",
+                "グラージチャージャー新登場。\nゲージを溜めてキル回数を増やそう",
+                "チェインシフター新登場。\nまるでババ抜きのババのよう",
+                "自爆魔新登場。\n自分も死ぬけど、周りも道連れに。",
                 "COします。占い師です。\nあなたは人狼ですね？",
             };
 

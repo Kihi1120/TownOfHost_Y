@@ -142,7 +142,7 @@ public static class CustomRoleManager
         {
             onMurderPlayer(info);
         }
-        AddBait.OnMurderPlayer(info);
+
         if (info.IsMeeting)
         {
             Lovers.VoteSuicide(attemptTarget.PlayerId);
@@ -262,6 +262,7 @@ public static class CustomRoleManager
         switch (subRole)
         {
             case CustomRoles.Lovers: Lovers.Add(playerId); break;
+            case CustomRoles.ChainShifterAddon: ChainShifterAddon.Add(playerId); break;
 
             case CustomRoles.AddWatch: AddWatch.Add(playerId); break;
             case CustomRoles.AddLight: AddLight.Add(playerId); break;
@@ -444,7 +445,6 @@ public enum CustomRoles
     EvilTracker,
     Stealth,
     NekoKabocha,
-    EvilHacker,
     Insider,
     EvilNekomata,
     AntiAdminer,
@@ -461,9 +461,11 @@ public enum CustomRoles
     EvilDyer,
     BestieWolf,
     EvilGuesser,
+    SelfBomber,
+    GrudgeCharger,
     //Madmate
-    MadGuardian,
     Madmate,
+    MadGuardian,
     MadSnitch,
     MadSheriff,
     MadDictator,
@@ -472,10 +474,10 @@ public enum CustomRoles
     MadNimrod,
     MadScientist,
     MadJester,
+    MadGuesser,
 
     MadDilemma,
     SKMadmate,
-    MadGuesser,
     //Crewmate(Vanilla)
     Engineer,
     GuardianAngel,
@@ -518,9 +520,9 @@ public enum CustomRoles
     LoyalDoggy,
     Rabbit,
     VentManager,
-    Counselor,
     NiceGuesser, 
 
+    Counselor,
     Potentialist,
     //Neutral
     Arsonist,
@@ -546,6 +548,7 @@ public enum CustomRoles
     Ogre,
     Pirate,
     Gang,
+    ChainShifter,
 
     GM,
     CounselorAndMadDilemma,
@@ -604,6 +607,7 @@ public enum CustomRoles
     InfoPoor,
     NonReport,
     Archenemy,
+    ChainShifterAddon,
 
     MaxAddon,
 

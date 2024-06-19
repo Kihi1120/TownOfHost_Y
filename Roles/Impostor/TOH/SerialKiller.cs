@@ -41,7 +41,6 @@ namespace TownOfHostY.Roles.Impostor
         private static float KillCooldown;
         private static float TimeLimit;
 
-        public bool CanBeLastImpostor { get; } = false;
         public float? SuicideTimer;
 
         private static void SetUpOptionItem()
@@ -68,7 +67,7 @@ namespace TownOfHostY.Roles.Impostor
             SuicideTimer = null;
             killer.MarkDirtySettings();
         }
-        public override void OnReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
+        public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
         {
             SuicideTimer = null;
         }
